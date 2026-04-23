@@ -632,7 +632,22 @@
       font-family: "Fraunces", serif;
       font-style: italic;
       font-size: 0.9rem;
-      opacity: 0.6;
+      /* color set below per variant — avoid opacity since it cascades to tooltip */
+    }
+
+    /* Dim label · white text on dark/colored cards */
+    .highlight.h-1 .num,
+    .highlight.h-2 .num,
+    .highlight.h-6 .num {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    /* Dim label · ink text on light cards */
+    .highlight.h-3 .num,
+    .highlight.h-4 .num,
+    .highlight.h-5 .num,
+    .highlight.h-7 .num {
+      color: rgba(31, 26, 22, 0.55);
     }
 
     .highlight .name {
@@ -1102,17 +1117,17 @@
       width: 26px;
       height: 26px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      color: inherit;
+      background: rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: rgba(255, 255, 255, 0.95);  /* explicit — don't inherit dim .num color */
       font-family: "Fraunces", serif;
       font-size: 0.82rem;
       font-weight: 500;
       cursor: pointer;
       padding: 0;
       margin: 0;
-      opacity: 1;                  /* resist parent .num opacity: 0.6 */
-      font-style: normal;          /* resist parent italic */
+      opacity: 1;                  /* safety — in case any ancestor has opacity */
+      font-style: normal;
       line-height: 1;
       position: relative;
       top: -1px;
@@ -1121,9 +1136,14 @@
 
     /* Light-background cards: solid ink styling for contrast */
     .highlight.light-bg .info-btn {
-      background: rgba(31, 26, 22, 0.05);
-      border-color: rgba(31, 26, 22, 0.2);
+      background: rgba(31, 26, 22, 0.06);
+      border-color: rgba(31, 26, 22, 0.25);
       color: var(--ink);
+    }
+
+    /* Inline source tooltips are hidden — used only as content for the body-level portal */
+    .info-wrap > .tooltip {
+      display: none !important;
     }
 
     .info-btn:hover,
@@ -1151,27 +1171,29 @@
     }
 
     .tooltip {
-      /* position + coordinates set by JS on open; fixed so card overflow doesn't affect it */
+      /* Appended to <body> by JS. Position set by JS on every open.           */
+      /* Uses px color values, not vars — defensive against any cascade issue. */
       position: fixed;
       top: 0;
       left: -9999px;
-      background: var(--ink);
-      color: var(--cream);
-      padding: 0.9rem 1.1rem;
-      border-radius: 3px;
+      background-color: #1f1a16;         /* --ink, hardcoded for safety */
+      color: #faf6ef;                    /* --cream */
+      padding: 1rem 1.15rem;
+      border-radius: 4px;
       font-family: "Fraunces", serif;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       line-height: 1.6;
       letter-spacing: 0.01em;
       width: max-content;
-      max-width: min(280px, calc(100vw - 32px));
-      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+      max-width: min(300px, calc(100vw - 32px));
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(200, 163, 88, 0.15) inset;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.18s ease;
-      z-index: 300;                /* above fixed section-nav (100) */
+      transition: opacity 0.2s ease;
+      z-index: 9999;
       font-style: normal;
       text-align: left;
+      isolation: isolate;                /* force own stacking context */
     }
 
     .tooltip.visible {
@@ -1182,19 +1204,20 @@
     .tooltip .tip-label {
       display: block;
       font-style: italic;
-      color: var(--gold);
+      color: #c8a358;                    /* --gold */
       font-size: 0.72rem;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.55rem;
     }
 
     .tooltip .tip-settings {
       display: block;
       font-family: "Fraunces", serif;
-      font-size: 0.9rem;
-      color: var(--cream);
-      line-height: 1.65;
+      font-size: 0.95rem;
+      color: #faf6ef;
+      line-height: 1.7;
+      white-space: pre-line;             /* \n in data-attr → line break */
       font-variant-numeric: tabular-nums;
     }
 
@@ -1794,11 +1817,9 @@
         <div class="highlight h-1">
           <span class="num">01 · MUST · 7-7:30pm
             <span class="info-wrap">
-              <button class="info-btn" aria-label="Camera settings">ⓘ</button>
-              <div class="tooltip" role="tooltip">
-                <span class="tip-label">📷 Camera · Golden Hour Piano</span>
-                <span class="tip-settings">F/2.0 – F/2.8<br />ISO 200 – 400<br />+0.3 EV（拉暖）<br />50mm · portrait</span>
-              </div>
+              <button class="info-btn" aria-label="Camera settings"
+                      data-tip-label="📷 Camera · Golden Hour Piano"
+                      data-tip-settings="F/2.0 – F/2.8&#10;ISO 200 – 400&#10;+0.3 EV（拉暖）&#10;50mm · portrait">ⓘ</button>
             </span>
           </span>
           <div class="name">
@@ -1812,11 +1833,9 @@
         <div class="highlight h-2">
           <span class="num">02 · MUST · 8:00-8:15pm
             <span class="info-wrap">
-              <button class="info-btn" aria-label="Camera settings">ⓘ</button>
-              <div class="tooltip" role="tooltip">
-                <span class="tip-label">📷 Camera · Sunset Silhouette</span>
-                <span class="tip-settings">F/8 – F/11（深景深）<br />ISO 100<br />-0.7 EV（保高光）<br />24 – 35mm · wide</span>
-              </div>
+              <button class="info-btn" aria-label="Camera settings"
+                      data-tip-label="📷 Camera · Sunset Silhouette"
+                      data-tip-settings="F/8 – F/11（深景深）&#10;ISO 100&#10;-0.7 EV（保高光）&#10;24 – 35mm · wide">ⓘ</button>
             </span>
           </span>
           <div class="name">
@@ -1829,11 +1848,9 @@
         <div class="highlight h-3 light-bg">
           <span class="num">03 · 7:30pm
             <span class="info-wrap">
-              <button class="info-btn" aria-label="Camera settings">ⓘ</button>
-              <div class="tooltip" role="tooltip">
-                <span class="tip-label">📷 Camera · Yellow Brick Road</span>
-                <span class="tip-settings">F/2.8<br />ISO 200<br />0 EV<br />35 – 50mm · leading lines</span>
-              </div>
+              <button class="info-btn" aria-label="Camera settings"
+                      data-tip-label="📷 Camera · Yellow Brick Road"
+                      data-tip-settings="F/2.8&#10;ISO 200&#10;0 EV&#10;35 – 50mm · leading lines">ⓘ</button>
             </span>
           </span>
           <div class="name">
@@ -1843,14 +1860,12 @@
           <div class="tip">2026 新金色路徑，黃光配金路 = cinematic。</div>
         </div>
 
-        <div class="highlight h-4">
+        <div class="highlight h-4 light-bg">
           <span class="num">04 · 7:30pm
             <span class="info-wrap">
-              <button class="info-btn" aria-label="Camera settings">ⓘ</button>
-              <div class="tooltip" role="tooltip">
-                <span class="tip-label">📷 Camera · Klompen 木屐</span>
-                <span class="tip-settings">F/4 – F/5.6<br />ISO 400<br />Fill flash 可選<br />35mm · environmental</span>
-              </div>
+              <button class="info-btn" aria-label="Camera settings"
+                      data-tip-label="📷 Camera · Klompen 木屐"
+                      data-tip-settings="F/4 – F/5.6&#10;ISO 400&#10;Fill flash 可選&#10;35mm · environmental">ⓘ</button>
             </span>
           </span>
           <div class="name">
@@ -1863,11 +1878,9 @@
         <div class="highlight h-5 light-bg">
           <span class="num">05 · 7:45pm
             <span class="info-wrap">
-              <button class="info-btn" aria-label="Camera settings">ⓘ</button>
-              <div class="tooltip" role="tooltip">
-                <span class="tip-label">📷 Camera · Vintage Bicycles</span>
-                <span class="tip-settings">F/2.8<br />ISO 400<br />+0.3 EV<br />50mm · shallow DOF</span>
-              </div>
+              <button class="info-btn" aria-label="Camera settings"
+                      data-tip-label="📷 Camera · Vintage Bicycles"
+                      data-tip-settings="F/2.8&#10;ISO 400&#10;+0.3 EV&#10;50mm · shallow DOF">ⓘ</button>
             </span>
           </span>
           <div class="name">
@@ -2130,80 +2143,94 @@
     }
 
     // ─────────────────────────────────────────────────────────────
-    // 3. CAMERA TOOLTIPS · click to toggle (position: fixed, JS-placed)
+    // 3. CAMERA TOOLTIPS · body-level portal, data-driven
     // ─────────────────────────────────────────────────────────────
-    function placeTooltip(btn, tooltip) {
-      // Render invisibly to measure actual size
-      tooltip.style.left = '-9999px';
-      tooltip.style.top = '0px';
-      tooltip.classList.add('visible');
-      const tt = tooltip.getBoundingClientRect();
-      tooltip.classList.remove('visible');
-
-      const b = btn.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const margin = 10;
-
-      // Vertical: prefer above button; flip below if no room
-      let top = b.top - tt.height - margin;
-      if (top < 8) top = b.bottom + margin;
-      if (top + tt.height > vh - 8) top = Math.max(8, vh - tt.height - 8);
-
-      // Horizontal: center on button; clamp to viewport with 12px side padding
-      let left = b.left + b.width / 2 - tt.width / 2;
-      if (left < 12) left = 12;
-      if (left + tt.width > vw - 12) left = vw - tt.width - 12;
-
-      tooltip.style.top = Math.round(top) + 'px';
-      tooltip.style.left = Math.round(left) + 'px';
-    }
-
-    function closeAllTooltips() {
-      document.querySelectorAll('.tooltip.visible').forEach(t => t.classList.remove('visible'));
-      document.querySelectorAll('.info-btn.open').forEach(b => b.classList.remove('open'));
-    }
-
     function initTooltips() {
-      const buttons = document.querySelectorAll('.info-btn');
+      // Single portal element appended directly to body.
+      // Being a body child, it escapes ALL ancestor opacity/transform cascades
+      // that can otherwise corrupt position:fixed or dim the background.
+      const portal = document.createElement('div');
+      portal.className = 'tooltip';
+      portal.setAttribute('role', 'tooltip');
+      portal.setAttribute('aria-hidden', 'true');
+      portal.innerHTML = '<span class="tip-label"></span><span class="tip-settings"></span>';
+      document.body.appendChild(portal);
 
-      buttons.forEach(btn => {
+      const label = portal.querySelector('.tip-label');
+      const settings = portal.querySelector('.tip-settings');
+      let activeBtn = null;
+
+      function close() {
+        portal.classList.remove('visible');
+        portal.setAttribute('aria-hidden', 'true');
+        if (activeBtn) {
+          activeBtn.classList.remove('open');
+          activeBtn = null;
+        }
+      }
+
+      function open(btn) {
+        label.textContent = btn.dataset.tipLabel || '';
+        settings.textContent = btn.dataset.tipSettings || '';  // \n → line break via white-space: pre-line
+
+        // Keep invisible while measuring
+        portal.style.visibility = 'hidden';
+        portal.style.top = '0px';
+        portal.style.left = '-9999px';
+        portal.classList.add('visible');
+
+        const tt = portal.getBoundingClientRect();
+        const b = btn.getBoundingClientRect();
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const gap = 12;
+        const sideSafe = 16;
+        const topSafe = 64;  // leave room under sticky section-nav
+
+        // Prefer above, flip below if insufficient room
+        let top = b.top - tt.height - gap;
+        if (top < topSafe) top = b.bottom + gap;
+        if (top + tt.height > vh - 8) top = Math.max(8, vh - tt.height - 8);
+
+        // Center on button, clamp horizontally
+        let left = b.left + b.width / 2 - tt.width / 2;
+        if (left < sideSafe) left = sideSafe;
+        if (left + tt.width > vw - sideSafe) left = vw - tt.width - sideSafe;
+
+        portal.style.top = Math.round(top) + 'px';
+        portal.style.left = Math.round(left) + 'px';
+        portal.style.visibility = '';
+        portal.setAttribute('aria-hidden', 'false');
+
+        btn.classList.add('open');
+        activeBtn = btn;
+      }
+
+      document.querySelectorAll('.info-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
           e.stopPropagation();
-          const wrap = btn.parentElement;
-          const tooltip = wrap && wrap.querySelector('.tooltip');
-          if (!tooltip) return;
-
-          const wasOpen = tooltip.classList.contains('visible');
-          closeAllTooltips();
-
-          if (!wasOpen) {
-            placeTooltip(btn, tooltip);
-            // Next frame so measurement is stable before transition
-            requestAnimationFrame(() => {
-              tooltip.classList.add('visible');
-              btn.classList.add('open');
-            });
-          }
+          const wasActive = activeBtn === btn;
+          close();
+          if (!wasActive) open(btn);
         });
       });
 
-      // Any click outside tooltip/button closes it
+      // Outside click
       document.addEventListener('click', function (e) {
         if (e.target.closest('.tooltip') || e.target.closest('.info-btn')) return;
-        closeAllTooltips();
+        close();
       });
 
-      // Escape closes
+      // Escape
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeAllTooltips();
+        if (e.key === 'Escape') close();
       });
 
-      // Scroll / resize: close (repositioning mid-scroll is janky)
+      // Scroll / resize: close to avoid stale positioning
       let scrollTimer;
       const onScrollOrResize = () => {
         clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(closeAllTooltips, 50);
+        scrollTimer = setTimeout(close, 40);
       };
       window.addEventListener('scroll', onScrollOrResize, { passive: true });
       window.addEventListener('resize', onScrollOrResize);
