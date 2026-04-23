@@ -33,7 +33,15 @@
       line-height: 1.7;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
+      padding-top: 52px;               /* offset for fixed top section-nav on desktop */
     }
+
+    @media (max-width: 600px) {
+      body { padding-top: 0; }         /* mobile nav docks to bottom, top is clear */
+    }
+
+    /* Hero's original nav is replaced by the global section-nav */
+    .hero-nav { display: none !important; }
 
     .label {
       font-family: "Fraunces", serif;
@@ -609,7 +617,7 @@
       justify-content: space-between;
       min-height: 200px;
       position: relative;
-      overflow: hidden;
+      /* overflow: visible — was hidden, clipped tooltips */
     }
 
     .h-1 { grid-column: span 7; min-height: 280px; background: linear-gradient(135deg, #c8a358, #8a6a30); color: white; }
@@ -802,7 +810,7 @@
       .hero-content { grid-template-columns: 1fr; gap: 2rem; }
       .hero-visual { height: 400px; }
       .overview-grid, .logistics-grid { grid-template-columns: 1fr; gap: 3rem; }
-      #dinner > .container > div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; gap: 2rem !important; }
+      #dinner > .container > div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
       .timeline::before { left: 80px; }
       .stop { grid-template-columns: 70px 1fr; gap: 1.5rem; }
       .stop-content::before { left: -23px; }
@@ -813,9 +821,568 @@
       .hero-nav { padding: 1rem 1.25rem; }
       .hero-content { padding: 2rem 1.25rem; }
     }
+
+    /* =================================================================
+       SECTION NAV — sticky top on desktop, bottom dock on mobile
+       ================================================================= */
+    .section-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(250, 246, 239, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(31, 26, 22, 0.08);
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 0.85rem 1.5rem;
+      font-family: "Fraunces", serif;
+    }
+
+    .section-nav a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 0.35rem 0;
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    .section-nav a:hover { color: var(--tulip); }
+
+    .section-nav a.active {
+      color: var(--tulip);
+    }
+
+    .section-nav a.active::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -0.4rem;
+      width: 4px;
+      height: 4px;
+      background: var(--tulip);
+      border-radius: 50%;
+    }
+
+    .section-nav .nav-icon { display: none; }
+
+    @media (max-width: 600px) {
+      .section-nav {
+        top: auto;
+        bottom: 0;
+        border-bottom: none;
+        border-top: 1px solid rgba(31, 26, 22, 0.08);
+        justify-content: space-around;
+        gap: 0;
+        padding: 0.6rem 0.25rem calc(0.6rem + env(safe-area-inset-bottom, 0));
+        background: rgba(255, 253, 249, 0.96);
+      }
+      .section-nav a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        flex: 1;
+        padding: 0.3rem 0;
+        font-family: "Noto Sans TC", sans-serif;
+        font-weight: 500;
+      }
+      .section-nav .nav-icon {
+        display: block;
+        font-size: 1.25rem;
+        line-height: 1;
+        filter: grayscale(0.3);
+        transition: filter 0.2s;
+      }
+      .section-nav a.active .nav-icon { filter: grayscale(0); }
+      .section-nav a.active::after { display: none; }
+      body { padding-bottom: 68px; }
+      .hero-nav { display: none; }
+    }
+
+    @media (max-width: 900px) and (min-width: 601px) {
+      .section-nav { gap: 1.25rem; padding: 0.75rem 1rem; }
+      .section-nav a { font-size: 0.82rem; }
+    }
+
+    /* =================================================================
+       FIELD REPORT WIDGET — minimalist weather bar
+       ================================================================= */
+    .field-report {
+      max-width: 1200px;
+      margin: -2rem auto 0;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 5;
+    }
+
+    .field-report-inner {
+      background: white;
+      border: 1px solid rgba(31, 26, 22, 0.06);
+      box-shadow: 0 12px 40px rgba(31, 26, 22, 0.06);
+      padding: 1.5rem 2rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .field-report .fr-label {
+      font-family: "Fraunces", serif;
+      font-style: italic;
+      font-size: 0.75rem;
+      color: var(--tulip);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      line-height: 1.4;
+    }
+
+    .field-report .fr-date {
+      font-family: "Fraunces", serif;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-top: 0.2rem;
+    }
+
+    .field-report .fr-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .field-report .fr-metric {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 0.5rem;
+      border-right: 1px solid rgba(31, 26, 22, 0.08);
+    }
+
+    .field-report .fr-metric:last-child { border-right: none; }
+
+    .field-report .fr-metric-key {
+      font-family: "Fraunces", serif;
+      font-style: italic;
+      font-size: 0.75rem;
+      color: var(--ink-soft);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    .field-report .fr-metric-val {
+      font-family: "Fraunces", serif;
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .field-report .fr-metric-val .small {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      margin-left: 0.15rem;
+    }
+
+    .field-report .fr-status {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.35rem;
+    }
+
+    .field-report .fr-pulse {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: "Fraunces", serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--sage-deep);
+    }
+
+    .field-report .fr-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--sage);
+      animation: fr-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes fr-pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(107, 142, 90, 0.5); }
+      50% { opacity: 0.7; box-shadow: 0 0 0 5px rgba(107, 142, 90, 0); }
+    }
+
+    .field-report .fr-updated {
+      font-size: 0.7rem;
+      color: var(--ink-soft);
+      font-style: italic;
+      letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 900px) {
+      .field-report { padding: 0 1.25rem; margin-top: -1rem; }
+      .field-report-inner {
+        grid-template-columns: 1fr;
+        padding: 1.25rem 1.5rem;
+        gap: 1.25rem;
+      }
+      .field-report .fr-metrics { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .field-report .fr-metric { border-right: none; border-bottom: 1px solid rgba(31, 26, 22, 0.06); padding-bottom: 0.75rem; }
+      .field-report .fr-status { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+
+    /* =================================================================
+       ACTIVE STOP — pulse + "you are here"
+       ================================================================= */
+    .stop.you-are-here .stop-content {
+      border-left: 3px solid var(--tulip);
+      box-shadow: 0 0 0 2px rgba(200, 16, 46, 0.15), 0 20px 60px rgba(200, 16, 46, 0.12);
+      animation: stop-pulse 2.5s ease-in-out infinite;
+      position: relative;
+    }
+
+    @keyframes stop-pulse {
+      0%, 100% { box-shadow: 0 0 0 2px rgba(200, 16, 46, 0.15), 0 20px 60px rgba(200, 16, 46, 0.12); }
+      50% { box-shadow: 0 0 0 6px rgba(200, 16, 46, 0.08), 0 20px 80px rgba(200, 16, 46, 0.22); }
+    }
+
+    .stop.you-are-here .stop-content::after {
+      content: "你喺度 · YOU ARE HERE";
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: var(--tulip);
+      color: white;
+      font-family: "Fraunces", serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      padding: 0.35rem 0.85rem;
+      border-radius: 2px;
+      box-shadow: 0 4px 12px rgba(200, 16, 46, 0.3);
+    }
+
+    .stop.you-are-here .stop-time {
+      color: var(--tulip);
+      font-weight: 700;
+    }
+
+    /* =================================================================
+       INFO BUTTON + TOOLTIP — camera settings
+       ================================================================= */
+    .info-wrap {
+      display: inline-block;
+      position: relative;
+      /* Break out of parent's italic + opacity cascade */
+      font-style: normal;
+      opacity: 1;
+      vertical-align: middle;
+      margin-left: 0.5rem;
+    }
+
+    .info-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: inherit;
+      font-family: "Fraunces", serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      opacity: 1;                  /* resist parent .num opacity: 0.6 */
+      font-style: normal;          /* resist parent italic */
+      line-height: 1;
+      position: relative;
+      top: -1px;
+      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Light-background cards: solid ink styling for contrast */
+    .highlight.light-bg .info-btn {
+      background: rgba(31, 26, 22, 0.05);
+      border-color: rgba(31, 26, 22, 0.2);
+      color: var(--ink);
+    }
+
+    .info-btn:hover,
+    .info-btn:focus-visible {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: white;
+      transform: scale(1.08);
+      outline: none;
+    }
+
+    .info-btn.open {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: white;
+    }
+
+    /* Larger touch area on mobile (keeps visual size, extends hit region) */
+    @media (max-width: 600px) {
+      .info-btn::before {
+        content: "";
+        position: absolute;
+        inset: -10px;
+      }
+    }
+
+    .tooltip {
+      /* position + coordinates set by JS on open; fixed so card overflow doesn't affect it */
+      position: fixed;
+      top: 0;
+      left: -9999px;
+      background: var(--ink);
+      color: var(--cream);
+      padding: 0.9rem 1.1rem;
+      border-radius: 3px;
+      font-family: "Fraunces", serif;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+      width: max-content;
+      max-width: min(280px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+      z-index: 300;                /* above fixed section-nav (100) */
+      font-style: normal;
+      text-align: left;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .tooltip .tip-label {
+      display: block;
+      font-style: italic;
+      color: var(--gold);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .tooltip .tip-settings {
+      display: block;
+      font-family: "Fraunces", serif;
+      font-size: 0.9rem;
+      color: var(--cream);
+      line-height: 1.65;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* =================================================================
+       POLISH · SCROLL REVEALS, HOVER LIFT, LOADING, A11Y
+       ================================================================= */
+
+    /* Base scroll-reveal states */
+    .reveal,
+    .reveal-stagger > * {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: opacity, transform;
+    }
+
+    .reveal.in-view,
+    .reveal-stagger.in-view > * {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Stagger delay per child, capped so late items never lag */
+    .reveal-stagger.in-view > * {
+      transition-delay: calc(var(--i, 0) * 75ms);
+    }
+    .reveal-stagger.in-view > *:nth-child(n+9) {
+      transition-delay: 600ms;
+    }
+
+    /* Highlight cards: hover lift (match food-card behaviour) */
+    .highlight {
+      transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .highlight:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 22px 55px var(--shadow);
+    }
+
+    /* Info button tactile press */
+    .info-btn:active {
+      transform: scale(0.9);
+      transition-duration: 0.08s !important;
+    }
+
+    /* Address cards: subtle shift on hover */
+    .address-card {
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .address-card:hover {
+      transform: translateX(4px);
+    }
+
+    /* Section-nav hover underline (desktop only) */
+    @media (min-width: 601px) {
+      .section-nav a::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -4px;
+        width: 0;
+        height: 1px;
+        background: var(--tulip);
+        transform: translateX(-50%);
+        transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .section-nav a:hover::before {
+        width: 26px;
+      }
+      .section-nav a.active::before {
+        width: 0;  /* let the dot ::after own the active state */
+      }
+    }
+
+    /* =================================================================
+       FIELD REPORT LOADING — spinner → staggered fade-in
+       ================================================================= */
+    .field-report-inner { position: relative; }
+
+    .field-report .fr-metric-val,
+    .field-report .fr-metric-key,
+    .field-report .fr-date,
+    .field-report .fr-label,
+    .field-report .fr-pulse,
+    .field-report .fr-updated {
+      opacity: 0;
+      transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .field-report.loaded .fr-metric-val,
+    .field-report.loaded .fr-metric-key,
+    .field-report.loaded .fr-date,
+    .field-report.loaded .fr-label,
+    .field-report.loaded .fr-pulse,
+    .field-report.loaded .fr-updated {
+      opacity: 1;
+    }
+
+    .field-report.loaded .fr-label { transition-delay: 50ms; }
+    .field-report.loaded .fr-date  { transition-delay: 130ms; }
+    .field-report.loaded .fr-metric:nth-child(1) .fr-metric-key,
+    .field-report.loaded .fr-metric:nth-child(1) .fr-metric-val { transition-delay: 200ms; }
+    .field-report.loaded .fr-metric:nth-child(2) .fr-metric-key,
+    .field-report.loaded .fr-metric:nth-child(2) .fr-metric-val { transition-delay: 270ms; }
+    .field-report.loaded .fr-metric:nth-child(3) .fr-metric-key,
+    .field-report.loaded .fr-metric:nth-child(3) .fr-metric-val { transition-delay: 340ms; }
+    .field-report.loaded .fr-metric:nth-child(4) .fr-metric-key,
+    .field-report.loaded .fr-metric:nth-child(4) .fr-metric-val { transition-delay: 410ms; }
+    .field-report.loaded .fr-pulse   { transition-delay: 480ms; }
+    .field-report.loaded .fr-updated { transition-delay: 560ms; }
+
+    /* Spinner during loading */
+    .field-report.loading .field-report-inner::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -11px 0 0 -11px;
+      width: 22px;
+      height: 22px;
+      border: 2px solid rgba(200, 16, 46, 0.18);
+      border-top-color: var(--tulip);
+      border-radius: 50%;
+      animation: fr-spin 0.85s linear infinite;
+      z-index: 2;
+    }
+
+    @keyframes fr-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Pause the fr-dot pulse until loaded */
+    .field-report:not(.loaded) .fr-dot {
+      animation-play-state: paused;
+    }
+
+    /* =================================================================
+       A11Y · honour prefers-reduced-motion
+       ================================================================= */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .reveal,
+      .reveal-stagger > *,
+      .field-report .fr-metric-val,
+      .field-report .fr-metric-key,
+      .field-report .fr-date,
+      .field-report .fr-label,
+      .field-report .fr-pulse,
+      .field-report .fr-updated {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .field-report.loading .field-report-inner::before { display: none; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- ============ SECTION NAV ============ -->
+  <nav class="section-nav" role="navigation" aria-label="Section navigation">
+    <a href="#hero" data-target="hero">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Top</span>
+    </a>
+    <a href="#itinerary" data-target="itinerary">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Plan</span>
+    </a>
+    <a href="#highlights" data-target="highlights">
+      <span class="nav-icon">🌷</span>
+      <span class="nav-label">Photos</span>
+    </a>
+    <a href="#dinner" data-target="dinner">
+      <span class="nav-icon">🍕</span>
+      <span class="nav-label">Eats</span>
+    </a>
+    <a href="#logistics" data-target="logistics">
+      <span class="nav-icon">🗺</span>
+      <span class="nav-label">Route</span>
+    </a>
+  </nav>
 
   <!-- ============ HERO ============ -->
   <section id="hero">
@@ -868,10 +1435,47 @@
     </div>
   </section>
 
+  <!-- ============ FIELD REPORT WIDGET ============ -->
+  <div class="field-report" id="field-report">
+    <div class="field-report-inner">
+      <div>
+        <div class="fr-label">Live Field Report</div>
+        <div class="fr-date" id="fr-date">Apr 22, 2026 · Wednesday</div>
+      </div>
+
+      <div class="fr-metrics">
+        <div class="fr-metric">
+          <div class="fr-metric-key">Abbotsford</div>
+          <div class="fr-metric-val" id="fr-temp">14<span class="small">°C</span></div>
+        </div>
+        <div class="fr-metric">
+          <div class="fr-metric-key">Conditions</div>
+          <div class="fr-metric-val" id="fr-cond" style="font-size: 1rem;">Partly Cloudy</div>
+        </div>
+        <div class="fr-metric">
+          <div class="fr-metric-key">Sunset</div>
+          <div class="fr-metric-val">8:15<span class="small">pm</span></div>
+        </div>
+        <div class="fr-metric">
+          <div class="fr-metric-key">Field Status</div>
+          <div class="fr-metric-val" style="font-size: 1rem;" id="fr-field">Dry · Walkable ✓</div>
+        </div>
+      </div>
+
+      <div class="fr-status">
+        <span class="fr-pulse">
+          <span class="fr-dot"></span>
+          <span>Good to go</span>
+        </span>
+        <span class="fr-updated" id="fr-updated">Updated moments ago</span>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ OVERVIEW ============ -->
   <section id="overview">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <h2>呢個 <span class="italic">行程</span> 好處</h2>
         <span class="meta">01 — WHY THIS WORKS</span>
       </div>
@@ -893,7 +1497,7 @@
           </p>
         </div>
 
-        <div class="overview-facts">
+        <div class="overview-facts reveal">
           <div class="fact">
             <span class="fact-key">日期</span>
             <span class="fact-val">Wed, Apr 22, 2026<br /><span class="hi">✓ 平日票 ✓ 鬱金香盛開</span></span>
@@ -926,12 +1530,12 @@
   <!-- ============ ITINERARY ============ -->
   <section id="itinerary">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <h2>一日 <span class="italic">行程</span></h2>
         <span class="meta">02 — ITINERARY · GOLDEN HOUR EDITION</span>
       </div>
 
-      <div class="timeline">
+      <div class="timeline reveal-stagger">
         <div class="stop">
           <div class="stop-time">13:00<span class="duration">出發</span></div>
           <div class="stop-content">
@@ -967,8 +1571,16 @@
         <div class="stop">
           <div class="stop-time">15:40<span class="duration">1h50min</span></div>
           <div class="stop-content">
-            <div class="stop-title"><span class="emoji">🏛️</span>Fort Langley · 歷史村散步</div>
-            <div class="stop-desc">BC 開埠第一條殖民村莊，充滿 heritage 建築。Glover Rd 主街有獨立 cafe、書店、古董舖、art gallery。行 Fort-to-Fort Trail 沿 Fraser River 散步（3km 單程，可以揀一段行）。Wendel's Cafe、Blacksmith Bakery、Lelem Arts 都係好位。</div>
+            <div class="stop-title"><span class="emoji">🏛️</span>Fort Langley · 歷史村散步<span style="font-size: 0.7rem; background: var(--cream-dark); color: var(--ink-soft); padding: 0.15rem 0.6rem; border-radius: 2px; margin-left: 0.5rem; font-family: 'Noto Sans TC', sans-serif; font-weight: 500; font-style: normal;">PLAN A · 天陰</span></div>
+            <div class="stop-desc">BC 開埠第一條殖民村莊，充滿 heritage 建築。Glover Rd 主街有獨立 cafe、書店、古董舖、art gallery。行 Fort-to-Fort Trail 沿 Fraser River 散步（3km 單程，揀段近 Marina Park 嗰段行 20-30 分鐘）。Blacksmith Bakery、Wendel's、Lelem Arts 都係好位。</div>
+          </div>
+        </div>
+
+        <div class="stop stop-alt" style="margin-top: 0.5rem;">
+          <div class="stop-time" style="color: var(--gold);">↻<span class="duration">OR</span></div>
+          <div class="stop-content" style="border-left: 3px solid var(--gold); background: linear-gradient(135deg, #faf6ef 0%, #f6ecd9 100%);">
+            <div class="stop-title"><span class="emoji">🍷</span>Mt. Lehman Winery · 葡萄園露台<span style="font-size: 0.7rem; background: var(--gold); color: white; padding: 0.15rem 0.6rem; border-radius: 2px; margin-left: 0.5rem; font-family: 'Noto Sans TC', sans-serif; font-weight: 500; font-style: normal;">PLAN B · 好天</span></div>
+            <div class="stop-desc"><strong>天氣好就直接由 Saku 殺去 Abbotsford，skip Fort Langley。</strong>離 Lakeland 只係 10 分鐘，Fraser Valley 獲獎 boutique 酒莊。開車嗰個試啖就得、另一個飲杯白酒坐喺露台望葡萄園 — 比行街更 chill。<br /><br /><span style="color: var(--tulip); font-family: 'Fraunces', serif; font-style: italic;">⚠️ 12pm-5pm 先開（Wed 有機會唔開，出發前打 604-746-2881 confirm）</span><br /><span style="font-size: 0.85rem; color: var(--ink-soft); font-style: italic;">後備：同區 Singletree Winery（Wed-Sun 12-5:30pm 確定開）</span><br /><br />Timing：Saku 3pm 走 → 4pm 到酒莊 → 5pm 走 → 15 分鐘到 Abbotsford cafe chill → 7pm Lakeland</div>
           </div>
         </div>
 
@@ -1042,12 +1654,12 @@
   <!-- ============ FOOD ============ -->
   <section id="food">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <h2>午餐 <span class="italic">+ 下午</span></h2>
         <span class="meta">03 — LUNCH & AFTERNOON</span>
       </div>
 
-      <div class="food-grid">
+      <div class="food-grid reveal-stagger">
         <div class="food-card featured">
           <span class="food-emoji">🍱</span>
           <div class="food-name">Saku · Zenbu Katsu Set</div>
@@ -1083,64 +1695,87 @@
   <!-- ============ DINNER ============ -->
   <section id="dinner" style="background: var(--ink); color: var(--cream);">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <h2 style="color: var(--cream);">晚餐 <span class="italic" style="color: var(--pink);">· Dinner</span></h2>
         <span class="meta" style="color: rgba(250, 246, 239, 0.5);">04 — POST-SUNSET DINNER · 9PM</span>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
-        <div>
-          <p style="color: rgba(250, 246, 239, 0.85); font-size: 1.15rem; margin-bottom: 1.5rem; line-height: 1.7;">
-            8:30pm 花田收場，Lakeland 離 <strong style="color: var(--pink);">Field House Brewing</strong>
-            只係 10-15 分鐘車程，係 East Abbotsford 最靚嘅 brewery — 獎項攞過唔少，
-            有 cozy fireplace + 大 beer lawn + wood-fire pizza，完全切合夜晚食嘅 vibe。
+      <p style="color: rgba(250, 246, 239, 0.75); font-size: 1.05rem; margin-bottom: 2.5rem; max-width: 720px; line-height: 1.7;">
+        8:30pm 花田收場，揀一間由 Lakeland 10-15 分鐘車程嘅 Abbotsford 餐廳。
+        兩條路：<strong style="color: var(--pink);">Field House</strong>（Pizza + craft beer · 放肆 vibe）或
+        <strong style="color: var(--pink);">Bow & Stern</strong>（Seafood + oysters · 輕身 quality）。
+      </p>
+
+      <div class="reveal-stagger" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: stretch;">
+
+        <!-- FIELD HOUSE -->
+        <div style="background: #2a221e; padding: 2rem; border-top: 3px solid var(--pink); display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <div>
+              <div style="font-family: 'Fraunces', serif; font-style: italic; color: var(--pink); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;">Option A · Casual</div>
+              <h3 style="font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 500; margin-top: 0.35rem;">🍕 Field House Brewing</h3>
+            </div>
+            <span style="font-size: 0.7rem; background: var(--pink); color: var(--ink); padding: 0.2rem 0.6rem; border-radius: 2px; font-family: 'Noto Sans TC', sans-serif; letter-spacing: 0.05em; font-weight: 500;">VIBE</span>
+          </div>
+          <p style="font-size: 0.95rem; color: rgba(250, 246, 239, 0.75); margin-bottom: 1.25rem; line-height: 1.6;">
+            獲獎 craft brewery，cozy fireplace + wood-fire pizza + 大 beer lawn。放肆啲、放鬆啲嘅 closer。
           </p>
-          <p style="color: rgba(250, 246, 239, 0.85); font-size: 1.05rem; margin-bottom: 1.5rem;">
-            Kitchen 10pm 收，最遲 9pm 要落單 —— 由花田直接開過去，8:45pm 到 Field House，
-            慢慢飲慢慢食。啤酒清單每週新嘢，揀 Fraser Valley-only 嘅 saison 或 sour 最抵。
-          </p>
-          <p style="color: rgba(250, 246, 239, 0.6); font-size: 0.95rem; font-style: italic;">
-            📌 2281 W Railway St, Abbotsford · Wed 11am – 10pm
-          </p>
+          <div style="padding-top: 1rem; border-top: 1px solid rgba(250, 246, 239, 0.1); margin-top: auto;">
+            <div style="font-size: 0.75rem; font-family: 'Fraunces', serif; font-style: italic; color: var(--pink); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem;">點菜</div>
+            <ul style="list-style: none; padding: 0; color: rgba(250, 246, 239, 0.85); font-size: 0.88rem; line-height: 1.9;">
+              <li>🍕 Wood-fire pizza (share)</li>
+              <li>🧀 Duck fat potatoes · 必試</li>
+              <li>🍺 Beer flight (4 × 5oz)</li>
+              <li>🌮 Canteen tacos</li>
+            </ul>
+          </div>
+          <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(250, 246, 239, 0.08); font-size: 0.78rem; color: rgba(250, 246, 239, 0.55); font-style: italic;">
+            📌 2281 W Railway St · Wed 11am–10pm<br />Kitchen 9:30pm LO
+          </div>
         </div>
 
-        <div style="background: #2a221e; padding: 2rem; border-left: 3px solid var(--pink);">
-          <div style="font-family: 'Fraunces', serif; font-style: italic; color: var(--pink); font-size: 0.9rem; margin-bottom: 1rem; letter-spacing: 0.05em;">點菜 RECOMMENDATION</div>
-          <ul style="list-style: none; padding: 0; color: rgba(250, 246, 239, 0.9);">
-            <li style="padding: 0.75rem 0; border-bottom: 1px solid rgba(250, 246, 239, 0.1);">
-              <strong style="font-family: 'Fraunces', serif; display: block; margin-bottom: 0.25rem;">🍕 Wood-fire Pizza</strong>
-              <span style="font-size: 0.9rem; color: rgba(250, 246, 239, 0.7);">場內招牌，share 一個夠</span>
-            </li>
-            <li style="padding: 0.75rem 0; border-bottom: 1px solid rgba(250, 246, 239, 0.1);">
-              <strong style="font-family: 'Fraunces', serif; display: block; margin-bottom: 0.25rem;">🧀 Duck Fat Potatoes</strong>
-              <span style="font-size: 0.9rem; color: rgba(250, 246, 239, 0.7);">review 都 rave · 必試</span>
-            </li>
-            <li style="padding: 0.75rem 0; border-bottom: 1px solid rgba(250, 246, 239, 0.1);">
-              <strong style="font-family: 'Fraunces', serif; display: block; margin-bottom: 0.25rem;">🍺 Beer Flight (4 x 5oz)</strong>
-              <span style="font-size: 0.9rem; color: rgba(250, 246, 239, 0.7);">試 seasonal，司機揀個開車嗰個 taste sip</span>
-            </li>
-            <li style="padding: 0.75rem 0;">
-              <strong style="font-family: 'Fraunces', serif; display: block; margin-bottom: 0.25rem;">🌮 Tacos</strong>
-              <span style="font-size: 0.9rem; color: rgba(250, 246, 239, 0.7);">Canteen menu，local ingredients</span>
-            </li>
-          </ul>
+        <!-- BOW & STERN -->
+        <div style="background: #2a221e; padding: 2rem; border-top: 3px solid var(--gold); display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <div>
+              <div style="font-family: 'Fraunces', serif; font-style: italic; color: var(--gold); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;">Option B · Elevated</div>
+              <h3 style="font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 500; margin-top: 0.35rem;">🦪 Bow & Stern</h3>
+            </div>
+            <span style="font-size: 0.7rem; background: var(--gold); color: var(--ink); padding: 0.2rem 0.6rem; border-radius: 2px; font-family: 'Noto Sans TC', sans-serif; letter-spacing: 0.05em; font-weight: 500;">QUALITY</span>
+          </div>
+          <p style="font-size: 0.95rem; color: rgba(250, 246, 239, 0.75); margin-bottom: 1.25rem; line-height: 1.6;">
+            Abbotsford 頂級海鮮，seafood platter 同生蠔質素一流。食得輕身、food quality 行先 —— 啱你抗炎飲食嘅習慣。
+          </p>
+          <div style="padding-top: 1rem; border-top: 1px solid rgba(250, 246, 239, 0.1); margin-top: auto;">
+            <div style="font-size: 0.75rem; font-family: 'Fraunces', serif; font-style: italic; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem;">點菜</div>
+            <ul style="list-style: none; padding: 0; color: rgba(250, 246, 239, 0.85); font-size: 0.88rem; line-height: 1.9;">
+              <li>🦪 Fresh oysters · 半打起</li>
+              <li>🐟 Seafood platter (share)</li>
+              <li>🥗 Fresh salad / ceviche</li>
+              <li>🍷 BC white wine pairing</li>
+            </ul>
+          </div>
+          <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(250, 246, 239, 0.08); font-size: 0.78rem; color: rgba(250, 246, 239, 0.55); font-style: italic;">
+            📌 Downtown Abbotsford · 建議出發前 confirm 營業時間同訂位
+          </div>
         </div>
+
       </div>
 
-      <div style="margin-top: 3rem; padding: 2rem; border: 1px solid rgba(250, 246, 239, 0.15); background: rgba(250, 246, 239, 0.03);">
-        <div style="font-family: 'Fraunces', serif; font-style: italic; color: var(--pink); font-size: 0.9rem; margin-bottom: 1rem; letter-spacing: 0.05em;">如果 Field House 滿 · 後備選擇</div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; color: rgba(250, 246, 239, 0.85); font-size: 0.95rem;">
+      <div style="margin-top: 3rem; padding: 1.75rem 2rem; border: 1px solid rgba(250, 246, 239, 0.12); background: rgba(250, 246, 239, 0.02);">
+        <div style="font-family: 'Fraunces', serif; font-style: italic; color: rgba(250, 246, 239, 0.6); font-size: 0.75rem; margin-bottom: 1rem; letter-spacing: 0.15em; text-transform: uppercase;">如果兩間都唔得 · 後備</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; color: rgba(250, 246, 239, 0.8); font-size: 0.9rem;">
           <div>
-            <strong style="font-family: 'Fraunces', serif; display: block; margin-bottom: 0.35rem; color: var(--cream);">🍕 Duft & Co. Brickhouse</strong>
-            Downtown Abbotsford · artisan wood-fire pizza · 2485 West Railway St
+            <strong style="font-family: 'Fraunces', serif; display: block; margin-bottom: 0.35rem; color: var(--cream); font-size: 1rem;">🍕 Duft & Co. Brickhouse</strong>
+            Downtown · artisan wood-fire pizza
           </div>
           <div>
-            <strong style="font-family: 'Fraunces', serif; display: block; margin-bottom: 0.35rem; color: var(--cream);">🥩 S+L Kitchen & Bar</strong>
-            Wed 到 9pm（要早少少去）· 高檔少少 · rooftop patio
+            <strong style="font-family: 'Fraunces', serif; display: block; margin-bottom: 0.35rem; color: var(--cream); font-size: 1rem;">🥩 S+L Kitchen & Bar</strong>
+            Wed 到 9pm 要早啲去 · rooftop patio
           </div>
           <div>
-            <strong style="font-family: 'Fraunces', serif; display: block; margin-bottom: 0.35rem; color: var(--cream);">🍔 Milestones Abbotsford</strong>
-            連鎖但穩陣 · 10pm 先收 · 唔駛驚無位
+            <strong style="font-family: 'Fraunces', serif; display: block; margin-bottom: 0.35rem; color: var(--cream); font-size: 1rem;">🍔 Milestones</strong>
+            連鎖但穩陣 · 10pm 收
           </div>
         </div>
       </div>
@@ -1150,14 +1785,22 @@
   <!-- ============ HIGHLIGHTS ============ -->
   <section id="highlights">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <h2>必影 <span class="italic">打卡位</span></h2>
         <span class="meta">05 — 1.5 小時 · 影邊幾個 priority</span>
       </div>
 
-      <div class="highlight-grid">
+      <div class="highlight-grid reveal-stagger">
         <div class="highlight h-1">
-          <span class="num">01 · MUST · 7-7:30pm</span>
+          <span class="num">01 · MUST · 7-7:30pm
+            <span class="info-wrap">
+              <button class="info-btn" aria-label="Camera settings">ⓘ</button>
+              <div class="tooltip" role="tooltip">
+                <span class="tip-label">📷 Camera · Golden Hour Piano</span>
+                <span class="tip-settings">F/2.0 – F/2.8<br />ISO 200 – 400<br />+0.3 EV（拉暖）<br />50mm · portrait</span>
+              </div>
+            </span>
+          </span>
           <div class="name">
             <span class="em">✨</span>
             Baby Grand Piano · 暖光鋼琴<br />
@@ -1167,7 +1810,15 @@
         </div>
 
         <div class="highlight h-2">
-          <span class="num">02 · MUST · 8:00-8:15pm</span>
+          <span class="num">02 · MUST · 8:00-8:15pm
+            <span class="info-wrap">
+              <button class="info-btn" aria-label="Camera settings">ⓘ</button>
+              <div class="tooltip" role="tooltip">
+                <span class="tip-label">📷 Camera · Sunset Silhouette</span>
+                <span class="tip-settings">F/8 – F/11（深景深）<br />ISO 100<br />-0.7 EV（保高光）<br />24 – 35mm · wide</span>
+              </div>
+            </span>
+          </span>
           <div class="name">
             <span class="em">⛰️</span>
             觀景台 · Sunset 雪山剪影
@@ -1175,8 +1826,16 @@
           <div class="tip">日落前 15 分鐘行去 elevated platform。Cascade 雪山做剪影，鬱金香田做前景，太陽落山嗰刻 wide shot 影到爆。</div>
         </div>
 
-        <div class="highlight h-3">
-          <span class="num">03 · 7:30pm</span>
+        <div class="highlight h-3 light-bg">
+          <span class="num">03 · 7:30pm
+            <span class="info-wrap">
+              <button class="info-btn" aria-label="Camera settings">ⓘ</button>
+              <div class="tooltip" role="tooltip">
+                <span class="tip-label">📷 Camera · Yellow Brick Road</span>
+                <span class="tip-settings">F/2.8<br />ISO 200<br />0 EV<br />35 – 50mm · leading lines</span>
+              </div>
+            </span>
+          </span>
           <div class="name">
             <span class="em">🟡</span>
             Yellow Brick Road
@@ -1185,7 +1844,15 @@
         </div>
 
         <div class="highlight h-4">
-          <span class="num">04 · 7:30pm</span>
+          <span class="num">04 · 7:30pm
+            <span class="info-wrap">
+              <button class="info-btn" aria-label="Camera settings">ⓘ</button>
+              <div class="tooltip" role="tooltip">
+                <span class="tip-label">📷 Camera · Klompen 木屐</span>
+                <span class="tip-settings">F/4 – F/5.6<br />ISO 400<br />Fill flash 可選<br />35mm · environmental</span>
+              </div>
+            </span>
+          </span>
           <div class="name">
             <span class="em">👞</span>
             巨型 Klompen 木屐
@@ -1193,8 +1860,16 @@
           <div class="tip">兩個人企得入嘅 Dutch shoes，cute 到爆。</div>
         </div>
 
-        <div class="highlight h-5">
-          <span class="num">05 · 7:45pm</span>
+        <div class="highlight h-5 light-bg">
+          <span class="num">05 · 7:45pm
+            <span class="info-wrap">
+              <button class="info-btn" aria-label="Camera settings">ⓘ</button>
+              <div class="tooltip" role="tooltip">
+                <span class="tip-label">📷 Camera · Vintage Bicycles</span>
+                <span class="tip-settings">F/2.8<br />ISO 400<br />+0.3 EV<br />50mm · shallow DOF</span>
+              </div>
+            </span>
+          </span>
           <div class="name">
             <span class="em">🚲</span>
             復古單車
@@ -1226,12 +1901,12 @@
   <!-- ============ LOGISTICS ============ -->
   <section id="logistics">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <h2>路線 <span class="italic">Logistics</span></h2>
         <span class="meta">06 — ROUTE</span>
       </div>
 
-      <div class="logistics-grid">
+      <div class="logistics-grid reveal-stagger">
         <div class="logistics-block">
           <h3><span class="em">🚗</span>路線（5 段）</h3>
           <ul>
@@ -1293,12 +1968,12 @@
   <!-- ============ TIPS ============ -->
   <section id="tips">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <h2>注意 <span class="italic">事項</span></h2>
         <span class="meta">07 — TIPS</span>
       </div>
 
-      <div class="tips-list">
+      <div class="tips-list reveal-stagger">
         <div class="tip-item">
           <div class="tip-num">01</div>
           <div class="tip-body">
@@ -1370,12 +2045,293 @@
   <footer>
     <div class="container">
       <h3>食盡 <span class="it">一日</span>，花海 + 啤酒埋尾。</h3>
-      <p>Saku → Fort Langley → Lakeland sunset → Field House pizza → 屋企。</p>
+      <p>Saku → Fort Langley (或 Mt. Lehman) → Lakeland sunset → Field House (或 Bow & Stern) → 屋企。</p>
       <div class="footer-meta">
-        TRAVEL PLAN V4 · APR 22, 2026 · 食 · 散步 · 夕陽花海 · 宵夜 EDITION
+        TRAVEL PLAN V5 · APR 22, 2026 · INTERACTIVE EDITION · 食 · 散步 · 夕陽花海 · 宵夜
       </div>
     </div>
   </footer>
+
+  <!-- ============ INTERACTIVE LOGIC ============ -->
+  <script>
+  (function () {
+    'use strict';
+
+    // ─────────────────────────────────────────────────────────────
+    // 1. TIME-BASED CONTEXT · "You are here" on today's trip
+    // ─────────────────────────────────────────────────────────────
+    const TRIP = { year: 2026, month: 3 /* April (0-indexed) */, date: 22 };
+    // Stop start-times in minutes-from-midnight, in DOM order on the timeline.
+    // These map 1:1 to .timeline .stop:not(.stop-alt) — alt panels are excluded.
+    const STOP_TIMES = [
+      13 * 60,         // 13:00  出發
+      13 * 60 + 30,    // 13:30  Saku 入位
+      13 * 60 + 30,    // 13:30  Lunch starts
+      15 * 60,         // 15:00  開去 Fort Langley
+      15 * 60 + 40,    // 15:40  Fort Langley 散步
+      17 * 60 + 30,    // 17:30  Fort Langley → Abbotsford
+      18 * 60,         // 18:00  Abbotsford cafe buffer
+      19 * 60,         // 19:00  Lakeland 入場
+      19 * 60,         // 19:00  Golden hour
+      20 * 60 + 15,    // 20:15  Sunset
+      20 * 60 + 30,    // 20:30  收場
+      20 * 60 + 45,    // 20:45  Dinner
+      22 * 60          // 22:00  返屋企
+    ];
+
+    function highlightActiveStop() {
+      const now = new Date();
+      const isTripDay =
+        now.getFullYear() === TRIP.year &&
+        now.getMonth() === TRIP.month &&
+        now.getDate() === TRIP.date;
+
+      if (!isTripDay) return;
+
+      const stops = document.querySelectorAll('.timeline .stop:not(.stop-alt)');
+      if (!stops.length) return;
+
+      const nowMin = now.getHours() * 60 + now.getMinutes();
+      let activeIdx = -1;
+      for (let i = 0; i < STOP_TIMES.length && i < stops.length; i++) {
+        if (STOP_TIMES[i] <= nowMin) activeIdx = i;
+      }
+
+      // Clear previous
+      document.querySelectorAll('.timeline .stop.you-are-here')
+        .forEach(s => s.classList.remove('you-are-here'));
+
+      if (activeIdx >= 0) {
+        stops[activeIdx].classList.add('you-are-here');
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 2. FIELD REPORT · date + pulse + updated timestamp
+    // ─────────────────────────────────────────────────────────────
+    function updateFieldReport() {
+      const now = new Date();
+      const updatedEl = document.getElementById('fr-updated');
+      const dateEl = document.getElementById('fr-date');
+      if (!updatedEl || !dateEl) return;
+
+      // Trip day marker
+      const isTripDay =
+        now.getFullYear() === TRIP.year &&
+        now.getMonth() === TRIP.month &&
+        now.getDate() === TRIP.date;
+
+      if (isTripDay) {
+        dateEl.innerHTML = 'Apr 22, 2026 · <span style="color: var(--tulip); font-style: italic;">Today</span>';
+      }
+
+      const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      updatedEl.textContent = 'Updated ' + time;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 3. CAMERA TOOLTIPS · click to toggle (position: fixed, JS-placed)
+    // ─────────────────────────────────────────────────────────────
+    function placeTooltip(btn, tooltip) {
+      // Render invisibly to measure actual size
+      tooltip.style.left = '-9999px';
+      tooltip.style.top = '0px';
+      tooltip.classList.add('visible');
+      const tt = tooltip.getBoundingClientRect();
+      tooltip.classList.remove('visible');
+
+      const b = btn.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const margin = 10;
+
+      // Vertical: prefer above button; flip below if no room
+      let top = b.top - tt.height - margin;
+      if (top < 8) top = b.bottom + margin;
+      if (top + tt.height > vh - 8) top = Math.max(8, vh - tt.height - 8);
+
+      // Horizontal: center on button; clamp to viewport with 12px side padding
+      let left = b.left + b.width / 2 - tt.width / 2;
+      if (left < 12) left = 12;
+      if (left + tt.width > vw - 12) left = vw - tt.width - 12;
+
+      tooltip.style.top = Math.round(top) + 'px';
+      tooltip.style.left = Math.round(left) + 'px';
+    }
+
+    function closeAllTooltips() {
+      document.querySelectorAll('.tooltip.visible').forEach(t => t.classList.remove('visible'));
+      document.querySelectorAll('.info-btn.open').forEach(b => b.classList.remove('open'));
+    }
+
+    function initTooltips() {
+      const buttons = document.querySelectorAll('.info-btn');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const wrap = btn.parentElement;
+          const tooltip = wrap && wrap.querySelector('.tooltip');
+          if (!tooltip) return;
+
+          const wasOpen = tooltip.classList.contains('visible');
+          closeAllTooltips();
+
+          if (!wasOpen) {
+            placeTooltip(btn, tooltip);
+            // Next frame so measurement is stable before transition
+            requestAnimationFrame(() => {
+              tooltip.classList.add('visible');
+              btn.classList.add('open');
+            });
+          }
+        });
+      });
+
+      // Any click outside tooltip/button closes it
+      document.addEventListener('click', function (e) {
+        if (e.target.closest('.tooltip') || e.target.closest('.info-btn')) return;
+        closeAllTooltips();
+      });
+
+      // Escape closes
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAllTooltips();
+      });
+
+      // Scroll / resize: close (repositioning mid-scroll is janky)
+      let scrollTimer;
+      const onScrollOrResize = () => {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(closeAllTooltips, 50);
+      };
+      window.addEventListener('scroll', onScrollOrResize, { passive: true });
+      window.addEventListener('resize', onScrollOrResize);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 4. SECTION NAV · scroll-spy active state
+    // ─────────────────────────────────────────────────────────────
+    function initSectionNav() {
+      const navLinks = document.querySelectorAll('.section-nav a');
+      if (!navLinks.length) return;
+
+      const targets = Array.from(navLinks)
+        .map(link => document.getElementById(link.dataset.target))
+        .filter(Boolean);
+
+      if (!('IntersectionObserver' in window)) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          // Find the entry most "in view"
+          let bestEntry = null;
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              if (!bestEntry || entry.intersectionRatio > bestEntry.intersectionRatio) {
+                bestEntry = entry;
+              }
+            }
+          });
+          if (bestEntry) {
+            const id = bestEntry.target.id;
+            navLinks.forEach(link => {
+              link.classList.toggle('active', link.dataset.target === id);
+            });
+          }
+        },
+        { rootMargin: '-30% 0px -50% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
+      );
+
+      targets.forEach(t => observer.observe(t));
+
+      // Smooth scroll with offset for fixed nav
+      navLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.getElementById(link.dataset.target);
+          if (!target) return;
+          const isMobile = window.matchMedia('(max-width: 600px)').matches;
+          const offset = isMobile ? 20 : 70;
+          const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+          window.scrollTo({ top, behavior: 'smooth' });
+        });
+      });
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 5. SCROLL-TRIGGERED REVEALS · fade up on enter
+    // ─────────────────────────────────────────────────────────────
+    function initScrollReveals() {
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const targets = document.querySelectorAll('.reveal, .reveal-stagger');
+
+      // Set stagger index as a CSS custom property on each child
+      document.querySelectorAll('.reveal-stagger').forEach(parent => {
+        Array.from(parent.children).forEach((child, i) => {
+          child.style.setProperty('--i', i);
+        });
+      });
+
+      if (reduced || !('IntersectionObserver' in window)) {
+        targets.forEach(el => el.classList.add('in-view'));
+        return;
+      }
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0 });
+
+      targets.forEach(el => io.observe(el));
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 6. FIELD REPORT LOADING · spinner → staggered reveal
+    // ─────────────────────────────────────────────────────────────
+    function initFieldReportLoading() {
+      const fr = document.getElementById('field-report');
+      if (!fr) return;
+
+      // Start in loading state
+      fr.classList.add('loading');
+
+      // Reveal after a brief "fetch" delay
+      setTimeout(() => {
+        fr.classList.remove('loading');
+        fr.classList.add('loaded');
+      }, 650);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // INIT
+    // ─────────────────────────────────────────────────────────────
+    function init() {
+      highlightActiveStop();
+      updateFieldReport();
+      initTooltips();
+      initSectionNav();
+      initScrollReveals();
+      initFieldReportLoading();
+
+      // Refresh every minute for "you are here" + field report
+      setInterval(() => {
+        highlightActiveStop();
+        updateFieldReport();
+      }, 60 * 1000);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
 
 </body>
 </html>
